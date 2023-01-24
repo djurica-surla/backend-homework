@@ -53,11 +53,12 @@ func (store *QuestionOptionStore) GetQuestionOptions(ctx context.Context, questi
 }
 
 // Creates a new QuestionOption in the database.
-func (store *QuestionOptionStore) CreateQuestionOption(ctx context.Context, QuestionOption entity.QuestionOption) error {
+func (store *QuestionOptionStore) CreateQuestionOption(ctx context.Context,
+	questionID, correct int, body string) error {
 	_, err := store.db.ExecContext(ctx,
-		`INSERT INTO QuestionOption (body, correct, question_id)
-		VALUES ($1, $2, $3)`, QuestionOption.Body, QuestionOption.Correct, QuestionOption.QuestionID)
-	if err != nil {
+		`INSERT INTO question_option (body, correct, question_id)
+		VALUES ($1, $2, $3)`, body, correct, questionID)
+	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("error creating question options in database %w", err)
 	}
 

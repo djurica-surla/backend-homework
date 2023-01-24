@@ -50,15 +50,17 @@ func (store *QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question
 }
 
 // Creates a new question in the database.
-func (store *QuestionStore) CreateQuestion(ctx context.Context, question entity.Question) error {
-	_, err := store.db.ExecContext(ctx,
-		`INSERT INTO question (body, correct, question_id)
-		VALUES ($1, $2, $3)`, question.Body)
-	if err != nil {
-		return fmt.Errorf("error creating questions in database %w", err)
+func (store *QuestionStore) CreateQuestion(ctx context.Context, body string) (int, error) {
+	var questionID int
+
+	err := store.db.QueryRowContext(ctx,
+		`INSERT INTO question (body)
+		VALUES ($1) RETURNING id`, body).Scan(&questionID)
+	if err != nil && err != sql.ErrNoRows {
+		return 0, fmt.Errorf("error creating questions in database %w", err)
 	}
 
-	return nil
+	return questionID, nil
 }
 
 // Updates a question in the database by the id.
