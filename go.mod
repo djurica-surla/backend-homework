@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.15.2
+	github.com/gorilla/mux v1.7.4
 	modernc.org/sqlite v1.10.6
 )
 
