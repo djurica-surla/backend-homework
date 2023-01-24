@@ -22,7 +22,7 @@ func NewQuestionStore(connection *sql.DB) *QuestionStore {
 }
 
 // Retrieves a list of questions from the database.
-func (store QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question, error) {
+func (store *QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question, error) {
 	questions := []entity.Question{}
 
 	rows, err := store.db.QueryContext(ctx,
@@ -50,7 +50,7 @@ func (store QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question,
 }
 
 // Creates a new question in the database.
-func (store QuestionStore) CreateQuestion(ctx context.Context, question entity.Question) error {
+func (store *QuestionStore) CreateQuestion(ctx context.Context, question entity.Question) error {
 	_, err := store.db.ExecContext(ctx,
 		`INSERT INTO answer (body, correct, question_id)
 		VALUES ($1, $2, $3)`, question.Body)
@@ -62,7 +62,7 @@ func (store QuestionStore) CreateQuestion(ctx context.Context, question entity.Q
 }
 
 // Updates a question in the database by the id.
-func (store QuestionStore) UpdateQuestion(ctx context.Context, questionID int, body string) error {
+func (store *QuestionStore) UpdateQuestion(ctx context.Context, questionID int, body string) error {
 	_, err := store.db.ExecContext(ctx,
 		`UPDATE question
 		SET body = $1 WHERE id = $2`, body, questionID)
@@ -74,7 +74,7 @@ func (store QuestionStore) UpdateQuestion(ctx context.Context, questionID int, b
 }
 
 // Deletes a question in the database by the id.
-func (store QuestionStore) DeleteQuestion(ctx context.Context, questionID int) error {
+func (store *QuestionStore) DeleteQuestion(ctx context.Context, questionID int) error {
 	_, err := store.db.ExecContext(ctx,
 		`DELETE FROM question
 		WHERE id = $1`, questionID)

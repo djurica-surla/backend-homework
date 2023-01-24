@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = database.Migrate(connection, "/migrations")
+	err = database.Migrate(connection, "migrations")
 	if err != nil {
 		log.Fatal(err)
 	}
