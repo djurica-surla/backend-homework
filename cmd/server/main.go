@@ -32,11 +32,11 @@ func main() {
 	// Instantiate question storage.
 	questionStorage := storage.NewQuestionStore(connection)
 
-	// Instantiate answer storage.
-	answerStorage := storage.NewAnswerStore(connection)
+	// Instantiate question option storage.
+	questionOptionStorage := storage.NewQuestionOptionStore(connection)
 
 	// Instantiate question service.
-	questionService := service.NewQuestionService(questionStorage, answerStorage)
+	questionService := service.NewQuestionService(questionStorage, questionOptionStorage)
 
 	// Instantiate mux router.
 	router := mux.NewRouter().StrictSlash(true)

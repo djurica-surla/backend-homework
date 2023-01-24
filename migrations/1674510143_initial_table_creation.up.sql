@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS question (
     body VARCHAR(255)
 );
 
--- Create answer table
-CREATE TABLE IF NOT EXISTS answer (
+-- Create question_option table
+CREATE TABLE IF NOT EXISTS question_option (
     id INTEGER PRIMARY KEY,
     body VARCHAR(255),
     correct INTEGER NOT NULL CHECK (correct IN (0, 1)),

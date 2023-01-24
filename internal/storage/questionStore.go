@@ -52,7 +52,7 @@ func (store *QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question
 // Creates a new question in the database.
 func (store *QuestionStore) CreateQuestion(ctx context.Context, question entity.Question) error {
 	_, err := store.db.ExecContext(ctx,
-		`INSERT INTO answer (body, correct, question_id)
+		`INSERT INTO question (body, correct, question_id)
 		VALUES ($1, $2, $3)`, question.Body)
 	if err != nil {
 		return fmt.Errorf("error creating questions in database %w", err)

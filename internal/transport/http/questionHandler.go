@@ -3,13 +3,14 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/djurica-surla/backend-homework/internal/service"
 	"github.com/gorilla/mux"
 )
 
-// RegisterRoutes links routes with the handler
+// RegisterRoutes links routes with the handler.
 func (h *QuestionHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/questions", h.GetQuestions()).Methods(http.MethodGet)
 }
@@ -19,6 +20,7 @@ type QuestionServicer interface {
 	GetQuestions(ctx context.Context) ([]service.Question, error)
 }
 
+// QuestionHandler handles http requests for questions.
 type QuestionHandler struct {
 	questionService QuestionServicer
 }
@@ -35,12 +37,12 @@ func (h *QuestionHandler) GetQuestions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		questions, err := h.questionService.GetQuestions(r.Context())
 		if err != nil {
+			errorResponse := fmt.Sprintf("error: %s", err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(err)
+			json.NewEncoder(w).Encode(errorResponse)
 			return
 		}
 
 		json.NewEncoder(w).Encode(questions)
 	}
-
 }

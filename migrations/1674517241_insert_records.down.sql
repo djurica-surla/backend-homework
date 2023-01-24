@@ -1,5 +1,5 @@
--- Delete all records from answer table
-TRUNCATE answer;
+-- Delete all records from question_option table
+TRUNCATE question_option;
 
 -- Delete all records from question table
 Truncate question;

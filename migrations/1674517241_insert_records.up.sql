@@ -3,7 +3,7 @@ VALUES ('Which is the fastest land animal?'),
        ('How many continents are there?'),
        ('What is the tallest building in the world?');  
 
-INSERT INTO answer (body, correct, question_id)
+INSERT INTO question_option (body, correct, question_id)
 VALUES ('Monkey', 0, 1),
        ('Cow', 0, 1),
        ('Cheetah', 1, 1),
