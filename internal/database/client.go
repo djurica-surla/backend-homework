@@ -26,21 +26,19 @@ var (
 	ErrMigration        = errors.New("database migration failed")
 )
 
-// Repository is the concrete implementations that allows to use sqlite as store.
-type Repository struct {
-	Instance *sql.DB
-}
+// Represents connection with the database.
+type Connection *sql.DB
 
 // Configuration for creating a new sqlite instance.
 type Config struct {
 	DSN string
 }
 
-// New creates a database client wrapper.
-func NewRepository(
+// Connect connects to the database using the provided DSN.
+func Connect(
 	ctx context.Context,
 	cfg Config,
-) (*Repository, error) {
+) (Connection, error) {
 	instance, err := sql.Open(sqliteDriver, cfg.DSN)
 	if err != nil {
 		return nil, ErrFailedConnection
@@ -52,12 +50,12 @@ func NewRepository(
 	}
 
 	log.Println("Connection successful!")
-	return &Repository{Instance: instance}, nil
+	return instance, nil
 }
 
 // Migrate makes sure database migrations are up to date.
-func (db Repository) Migrate(path string) error {
-	driver, err := sqlite.WithInstance(db.Instance, &sqlite.Config{
+func Migrate(connection Connection, path string) error {
+	driver, err := sqlite.WithInstance(connection, &sqlite.Config{
 		MigrationsTable: fmt.Sprintf("%s_%s", sqliteMigrationsTable, sqlite.DefaultMigrationsTable),
 	})
 	if err != nil {
