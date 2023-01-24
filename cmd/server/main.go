@@ -5,7 +5,8 @@ import (
 	"log"
 
 	"github.com/djurica-surla/backend-homework/internal/database"
-	"github.com/djurica-surla/backend-homework/internal/repository/sqlite"
+	"github.com/djurica-surla/backend-homework/internal/service"
+	"github.com/djurica-surla/backend-homework/internal/storage"
 )
 
 func main() {
@@ -22,5 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_ = sqlite.NewQuestionRepository(connection)
+	questionStorage := storage.NewQuestionStore(connection)
+
+	_ = service.NewQuestionService(questionStorage)
 }
