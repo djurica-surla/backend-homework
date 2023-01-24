@@ -1,0 +1,12 @@
+linters:
+  # Enable extra linters besides the default ones
+  enable:
+    - goimports
+    - goconst
+    - govet
+    - stylecheck
+    - unconvert
+    - unparam
+    - misspell
+    - whitespace
+    - godot
