@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// A struct which holds the app configuration
+// A struct which holds the app configuration.
 type Config struct {
 	Port string `mapstructure:"port"`
 	DSN  string `mapstructure:"dsn"`
@@ -14,7 +14,7 @@ type Config struct {
 
 var AppConfig *Config
 
-// Function which reads configuration from config.json
+// Function which reads configuration from config.json.
 func LoadAppConfig() {
 	log.Println("loading server configuration...")
 	viper.AddConfigPath(".")

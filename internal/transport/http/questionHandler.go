@@ -135,7 +135,7 @@ func (h *QuestionHandler) DeleteQuestion() http.HandlerFunc {
 			return
 		}
 
-		json.NewEncoder(w).Encode("successfuly deleted question")
+		json.NewEncoder(w).Encode("successfully deleted question")
 	}
 }
 

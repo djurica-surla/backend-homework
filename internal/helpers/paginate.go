@@ -6,10 +6,10 @@ import (
 	"strconv"
 )
 
-// Paginate extracts page and page_size query values, validates them and returns page and offset necessary for db query
+// Paginate extracts page and page_size query values, validates them
+// and returns page and offset necessary for db query.
 func Paginate(query url.Values) (int, int, error) {
-
-	// If both queries are empty, return defaul values (1 for page and 50 for page size)
+	// If both queries are empty, return defaul values (1 for page and 50 for page size).
 	if query.Get("page") == "" && query.Get("page_size") == "" {
 		page := 1
 		pageSize := 50
@@ -17,7 +17,7 @@ func Paginate(query url.Values) (int, int, error) {
 		return pageSize, offset, nil
 	}
 
-	// If at least one is not empty, validate both of them
+	// If at least one is not empty, validate both of them.
 	page, err := strconv.Atoi(query.Get("page"))
 	if err != nil {
 		return 0, 0, fmt.Errorf("error converting page query param to number: %w", err)
@@ -43,5 +43,4 @@ func Paginate(query url.Values) (int, int, error) {
 	offset := (page - 1) * pageSize
 
 	return pageSize, offset, nil
-
 }
