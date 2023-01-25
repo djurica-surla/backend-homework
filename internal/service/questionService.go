@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/djurica-surla/backend-homework/internal/entity"
@@ -14,7 +12,7 @@ type QuestionStorer interface {
 	GetQuestions(ctx context.Context, pageSize, offset int) ([]entity.Question, error)
 	GetQuestionByID(ctx context.Context, questionID int) (entity.Question, error)
 	CreateQuestion(ctx context.Context, body string) (int, error)
-	UpdateQuestion(ctx context.Context, questionID int, body string) error
+	UpdateQuestion(ctx context.Context, questionID int, body string) (int, error)
 	DeleteQuestion(ctx context.Context, questionID int) error
 }
 
@@ -140,18 +138,14 @@ func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation Q
 // UpdateQuestion handles the logic for updating question and its options in database.
 func (s *QuestionService) UpdateQuestion(ctx context.Context,
 	questionID int, questionCreation QuestionCreationDTO) (QuestionDTO, error) {
-	// Validate that the question exists
-	_, err := s.GetQuestionByID(ctx, questionID)
+	// Update the question record first
+	rowsAffected, err := s.questionStore.UpdateQuestion(ctx, questionID, questionCreation.Body)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return QuestionDTO{}, nil
-		}
-		return QuestionDTO{}, fmt.Errorf("error trying to update question: %w", err)
+		return QuestionDTO{}, err
 	}
 
-	// Update the question record first
-	err = s.questionStore.UpdateQuestion(ctx, questionID, questionCreation.Body)
-	if err != nil {
+	// If rows affected are zero, return empty dto meaning nothing was updated
+	if rowsAffected == 0 {
 		return QuestionDTO{}, err
 	}
 

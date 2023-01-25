@@ -79,15 +79,16 @@ func (store *QuestionStore) CreateQuestion(ctx context.Context, body string) (in
 }
 
 // Updates a question in the database by the id.
-func (store *QuestionStore) UpdateQuestion(ctx context.Context, questionID int, body string) error {
-	_, err := store.db.ExecContext(ctx,
+func (store *QuestionStore) UpdateQuestion(ctx context.Context, questionID int, body string) (int, error) {
+	res, err := store.db.ExecContext(ctx,
 		`UPDATE question
 		SET body = $1 WHERE id = $2`, body, questionID)
+	n, _ := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("failed to update question %w", err)
+		return 0, fmt.Errorf("failed to update question %w", err)
 	}
 
-	return nil
+	return int(n), nil
 }
 
 // Deletes a question in the database by the id.

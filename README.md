@@ -3,6 +3,6 @@
 ###
 Run "make run" to start the server.
 
-Database gets created automatically in the root file, I will include it in the repo however
+Database gets created automatically in the root file with the name specified in config.json
 
-Didn't have time to add tests or some more features, sorry about that :|
+Use config.json to set the dsn and port number, if dsn is empty database will be in memory.
