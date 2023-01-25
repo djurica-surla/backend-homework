@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS question (
 );
 
 -- Create question_option table
+-- For correct, 1 = true & 0 = false
 CREATE TABLE IF NOT EXISTS question_option (
     id INTEGER PRIMARY KEY,
     body VARCHAR(255),

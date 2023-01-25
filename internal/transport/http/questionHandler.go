@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/djurica-surla/backend-homework/internal/helpers"
 	"github.com/djurica-surla/backend-homework/internal/service"
@@ -15,12 +16,14 @@ import (
 func (h *QuestionHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/questions", h.GetQuestions()).Methods(http.MethodGet)
 	router.HandleFunc("/questions", h.CreateQuestion()).Methods(http.MethodPost)
+	router.HandleFunc("/questions/{id}", h.UpdateQuestion()).Methods(http.MethodPut)
 }
 
 // QuestionServicer represents necessary question service implementation for question handler.
 type QuestionServicer interface {
 	GetQuestions(ctx context.Context) ([]service.QuestionDTO, error)
-	CreateQuestion(ctx context.Context, questionCreation service.QuestionCreationDTO) error
+	CreateQuestion(ctx context.Context, dto service.QuestionCreationDTO) error
+	UpdateQuestion(ctx context.Context, questionID int, dto service.QuestionCreationDTO) (service.QuestionDTO, error)
 }
 
 // QuestionHandler handles http requests for questions.
@@ -35,14 +38,12 @@ func NewQuestionHandler(questionService QuestionServicer) *QuestionHandler {
 	}
 }
 
-// GetQuestions retrieves questions from the questions service.
+// GetQuestions handles retrieveing questions.
 func (h *QuestionHandler) GetQuestions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		questions, err := h.questionService.GetQuestions(r.Context())
 		if err != nil {
-			errorResponse := fmt.Sprintf("error: %s", err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorResponse)
+			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
@@ -57,28 +58,61 @@ func (h *QuestionHandler) CreateQuestion() http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&questionCreationDTO)
 		if err != nil {
-			errorResponse := fmt.Sprintf("error: %s", err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorResponse)
+			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
 		err = helpers.ValidateStruct(questionCreationDTO)
 		if err != nil {
-			errorResponse := fmt.Sprintf("error: %s", err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorResponse)
+			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
 		err = h.questionService.CreateQuestion(r.Context(), questionCreationDTO)
 		if err != nil {
-			errorResponse := fmt.Sprintf("error: %s", err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorResponse)
+			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
 		json.NewEncoder(w).Encode("successfully created question!")
 	}
+}
+
+// UpdateQuestion handles updating of questions.
+func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		questionIdNum, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+		}
+		questionID := int(questionIdNum)
+
+		questionCreationDTO := service.QuestionCreationDTO{}
+
+		err = json.NewDecoder(r.Body).Decode(&questionCreationDTO)
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+			return
+		}
+
+		err = helpers.ValidateStruct(questionCreationDTO)
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+			return
+		}
+
+		dto, err := h.questionService.UpdateQuestion(r.Context(), questionID, questionCreationDTO)
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+			return
+		}
+
+		json.NewEncoder(w).Encode(dto)
+	}
+}
+
+func (j *QuestionHandler) encodeErrorWithStatus500(err error, w http.ResponseWriter) {
+	errorResponse := fmt.Sprintf("error: %s", err.Error())
+	w.WriteHeader(http.StatusInternalServerError)
+	json.NewEncoder(w).Encode(errorResponse)
 }

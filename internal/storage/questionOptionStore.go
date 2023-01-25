@@ -69,10 +69,10 @@ func (store *QuestionOptionStore) CreateQuestionOption(ctx context.Context,
 func (store *QuestionOptionStore) UpdateQuestionOption(ctx context.Context,
 	body string, correct int, questionID int) error {
 	_, err := store.db.ExecContext(ctx,
-		`UPDATE QuestionOption
-		SET body = $1, correct = $2 WHERE question_id = $2`, body, correct, questionID)
+		`INSERT INTO question_option (body, correct, question_id)
+		VALUES ($1, $2, $3)`, body, correct, questionID)
 	if err != nil {
-		return fmt.Errorf("failed to update question option")
+		return fmt.Errorf("failed to update question option %w", err)
 	}
 
 	return nil
@@ -81,10 +81,10 @@ func (store *QuestionOptionStore) UpdateQuestionOption(ctx context.Context,
 // Deletes a QuestionOption in the database by the question id.
 func (store *QuestionOptionStore) DeleteQuestionOptions(ctx context.Context, questionID int) error {
 	_, err := store.db.ExecContext(ctx,
-		`DELETE FROM QuestionOption
+		`DELETE FROM question_option
 		WHERE question_id = $1`, questionID)
 	if err != nil {
-		return fmt.Errorf("failed to delete question option")
+		return fmt.Errorf("failed to delete question option %w", err)
 	}
 
 	return nil

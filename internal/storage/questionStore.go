@@ -49,6 +49,20 @@ func (store *QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question
 	return questions, nil
 }
 
+// Retrieves a  question from database the id.
+func (store *QuestionStore) GetQuestionByID(ctx context.Context, questionID int) (entity.Question, error) {
+	question := entity.Question{}
+
+	err := store.db.QueryRowContext(ctx,
+		`SELECT * FROM question WHERE id = $1`, questionID).
+		Scan(&question.ID, &question.Body)
+	if err != nil {
+		return entity.Question{}, fmt.Errorf("error getting questions from db %w", err)
+	}
+
+	return question, nil
+}
+
 // Creates a new question in the database.
 func (store *QuestionStore) CreateQuestion(ctx context.Context, body string) (int, error) {
 	var questionID int
@@ -56,7 +70,7 @@ func (store *QuestionStore) CreateQuestion(ctx context.Context, body string) (in
 	err := store.db.QueryRowContext(ctx,
 		`INSERT INTO question (body)
 		VALUES ($1) RETURNING id`, body).Scan(&questionID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		return 0, fmt.Errorf("error creating questions in database %w", err)
 	}
 
@@ -69,7 +83,7 @@ func (store *QuestionStore) UpdateQuestion(ctx context.Context, questionID int, 
 		`UPDATE question
 		SET body = $1 WHERE id = $2`, body, questionID)
 	if err != nil {
-		return fmt.Errorf("failed to update question")
+		return fmt.Errorf("failed to update question %w", err)
 	}
 
 	return nil
@@ -81,7 +95,7 @@ func (store *QuestionStore) DeleteQuestion(ctx context.Context, questionID int) 
 		`DELETE FROM question
 		WHERE id = $1`, questionID)
 	if err != nil {
-		return fmt.Errorf("failed to delete question")
+		return fmt.Errorf("failed to delete question %w", err)
 	}
 
 	return nil
