@@ -7,11 +7,12 @@ CREATE TABLE IF NOT EXISTS question (
 -- Create question_option table
 -- For correct, 1 = true & 0 = false
 CREATE TABLE IF NOT EXISTS question_option (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY ,
     body VARCHAR(255),
     correct INTEGER NOT NULL CHECK (correct IN (0, 1)),
     question_id INTEGER NOT NULL,
     CONSTRAINT fk_question
-    FOREIGN KEY (question_id)
+    FOREIGN KEY (question_id) 
     REFERENCES question(id)
+    ON DELETE CASCADE
 );

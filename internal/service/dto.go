@@ -17,7 +17,7 @@ type QuestionDTO struct {
 // Represents question optioon entity for question creation.
 type QuestionOptionCreationDTO struct {
 	Body    string `json:"body" validate:"required"`
-	Correct bool   `json:"correct" validate:"required"`
+	Correct bool   `json:"correct"`
 }
 
 // Represents entity used in question creation.

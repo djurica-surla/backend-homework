@@ -125,10 +125,10 @@ func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation Q
 		return QuestionDTO{}, err
 	}
 
-	// Zero for false, one for true
-	correctInt := 0
-
 	for _, option := range questionCreation.Options {
+		// Zero for false, one for true
+		correctInt := 0
+
 		if option.Correct {
 			correctInt = 1
 		}
@@ -173,10 +173,10 @@ func (s *QuestionService) UpdateQuestion(ctx context.Context,
 		return QuestionDTO{}, fmt.Errorf("error trying to update question: %w", err)
 	}
 
-	// Zero for false, one for true
-	correctInt := 0
-
 	for _, option := range questionCreation.Options {
+		// Zero for false, one for true
+		correctInt := 0
+
 		if option.Correct {
 			correctInt = 1
 		}
@@ -196,4 +196,9 @@ func (s *QuestionService) UpdateQuestion(ctx context.Context,
 	}
 
 	return questionDTO, nil
+}
+
+// DeleteQuestion handles the logic for deleting question and its options in database.
+func (s *QuestionService) DeleteQuestion(ctx context.Context, questionID int) error {
+	return s.questionStore.DeleteQuestion(ctx, questionID)
 }

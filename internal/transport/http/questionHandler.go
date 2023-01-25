@@ -17,6 +17,7 @@ func (h *QuestionHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/questions", h.GetQuestions()).Methods(http.MethodGet)
 	router.HandleFunc("/questions", h.CreateQuestion()).Methods(http.MethodPost)
 	router.HandleFunc("/questions/{id}", h.UpdateQuestion()).Methods(http.MethodPut)
+	router.HandleFunc("/questions/{id}", h.DeleteQuestion()).Methods(http.MethodDelete)
 }
 
 // QuestionServicer represents necessary question service implementation for question handler.
@@ -24,6 +25,7 @@ type QuestionServicer interface {
 	GetQuestions(ctx context.Context) ([]service.QuestionDTO, error)
 	CreateQuestion(ctx context.Context, questionCreation service.QuestionCreationDTO) (service.QuestionDTO, error)
 	UpdateQuestion(ctx context.Context, questionID int, questionCreation service.QuestionCreationDTO) (service.QuestionDTO, error)
+	DeleteQuestion(ctx context.Context, questionID int) error
 }
 
 // QuestionHandler handles http requests for questions.
@@ -108,6 +110,25 @@ func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
 		}
 
 		json.NewEncoder(w).Encode(res)
+	}
+}
+
+// DeleteQuestion handles deleting of questions.
+func (h *QuestionHandler) DeleteQuestion() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		questionIDNum, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+		}
+		questionID := int(questionIDNum)
+
+		err = h.questionService.DeleteQuestion(r.Context(), questionID)
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+			return
+		}
+
+		json.NewEncoder(w).Encode("successfuly deleted question")
 	}
 }
 
