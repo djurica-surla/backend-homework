@@ -81,11 +81,11 @@ func (h *QuestionHandler) CreateQuestion() http.HandlerFunc {
 // UpdateQuestion handles updating of questions.
 func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		questionIdNum, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
+		questionIDNum, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
 		if err != nil {
 			h.encodeErrorWithStatus500(err, w)
 		}
-		questionID := int(questionIdNum)
+		questionID := int(questionIDNum)
 
 		questionCreationDTO := service.QuestionCreationDTO{}
 
@@ -111,7 +111,7 @@ func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
 	}
 }
 
-func (j *QuestionHandler) encodeErrorWithStatus500(err error, w http.ResponseWriter) {
+func (h *QuestionHandler) encodeErrorWithStatus500(err error, w http.ResponseWriter) {
 	errorResponse := fmt.Sprintf("error: %s", err.Error())
 	w.WriteHeader(http.StatusInternalServerError)
 	json.NewEncoder(w).Encode(errorResponse)

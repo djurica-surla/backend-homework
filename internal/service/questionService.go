@@ -152,7 +152,6 @@ func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation Q
 // UpdateQuestion handles the logic for updating question and its options in database.
 func (s *QuestionService) UpdateQuestion(ctx context.Context,
 	questionID int, questionCreation QuestionCreationDTO) (QuestionDTO, error) {
-
 	// Validate that the question exists
 	_, err := s.GetQuestionByID(ctx, questionID)
 	if err != nil {
