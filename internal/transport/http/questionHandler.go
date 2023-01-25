@@ -22,7 +22,7 @@ func (h *QuestionHandler) RegisterRoutes(router *mux.Router) {
 
 // QuestionServicer represents necessary question service implementation for question handler.
 type QuestionServicer interface {
-	GetQuestions(ctx context.Context) ([]service.QuestionDTO, error)
+	GetQuestions(ctx context.Context, pageSize, offset int) ([]service.QuestionDTO, error)
 	CreateQuestion(ctx context.Context, questionCreation service.QuestionCreationDTO) (service.QuestionDTO, error)
 	UpdateQuestion(ctx context.Context, questionID int, questionCreation service.QuestionCreationDTO) (service.QuestionDTO, error)
 	DeleteQuestion(ctx context.Context, questionID int) error
@@ -43,7 +43,14 @@ func NewQuestionHandler(questionService QuestionServicer) *QuestionHandler {
 // GetQuestions handles retrieveing questions.
 func (h *QuestionHandler) GetQuestions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := h.questionService.GetQuestions(r.Context())
+		pageSize, offset, err := helpers.Paginate(r.URL.Query())
+		if err != nil {
+			h.encodeErrorWithStatus500(err, w)
+			json.NewEncoder(w).Encode("inccorect query params for pagination")
+			return
+		}
+
+		res, err := h.questionService.GetQuestions(r.Context(), pageSize, offset)
 		if err != nil {
 			h.encodeErrorWithStatus500(err, w)
 			return

@@ -22,11 +22,12 @@ func NewQuestionStore(connection *sql.DB) *QuestionStore {
 }
 
 // Retrieves a list of questions from the database.
-func (store *QuestionStore) GetQuestions(ctx context.Context) ([]entity.Question, error) {
+func (store *QuestionStore) GetQuestions(ctx context.Context, pageSize, offset int) ([]entity.Question, error) {
 	questions := []entity.Question{}
 
 	rows, err := store.db.QueryContext(ctx,
-		`SELECT * FROM question`)
+		`SELECT * FROM question 
+		  LIMIT $2 OFFSET $1`, offset, pageSize)
 	if err != nil && err != sql.ErrNoRows {
 		return []entity.Question{}, fmt.Errorf("error getting questions from db %w", err)
 	}

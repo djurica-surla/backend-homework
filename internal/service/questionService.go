@@ -11,7 +11,7 @@ import (
 
 // QuestionStorer represents necessary question storage implementation for question service.
 type QuestionStorer interface {
-	GetQuestions(ctx context.Context) ([]entity.Question, error)
+	GetQuestions(ctx context.Context, pageSize, offset int) ([]entity.Question, error)
 	GetQuestionByID(ctx context.Context, questionID int) (entity.Question, error)
 	CreateQuestion(ctx context.Context, body string) (int, error)
 	UpdateQuestion(ctx context.Context, questionID int, body string) error
@@ -41,8 +41,8 @@ func NewQuestionService(questionStore QuestionStorer, QuestionOptionStore Questi
 }
 
 // GetQuestions handles the logic for getting questions and its options.
-func (s *QuestionService) GetQuestions(ctx context.Context) ([]QuestionDTO, error) {
-	questionsEntity, err := s.questionStore.GetQuestions(ctx)
+func (s *QuestionService) GetQuestions(ctx context.Context, pageSize, offset int) ([]QuestionDTO, error) {
+	questionsEntity, err := s.questionStore.GetQuestions(ctx, pageSize, offset)
 	if err != nil {
 		return []QuestionDTO{}, err
 	}
