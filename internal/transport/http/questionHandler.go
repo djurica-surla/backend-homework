@@ -45,8 +45,7 @@ func (h *QuestionHandler) GetQuestions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		pageSize, offset, err := helpers.Paginate(r.URL.Query())
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
-			json.NewEncoder(w).Encode("inccorect query params for pagination")
+			h.encodeErrorWithStatus404(err, w)
 			return
 		}
 
@@ -67,13 +66,13 @@ func (h *QuestionHandler) CreateQuestion() http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&questionCreationDTO)
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
+			h.encodeErrorWithStatus404(err, w)
 			return
 		}
 
 		err = helpers.ValidateStruct(questionCreationDTO)
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
+			h.encodeErrorWithStatus404(err, w)
 			return
 		}
 
@@ -92,7 +91,8 @@ func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		questionIDNum, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
+			h.encodeErrorWithStatus404(err, w)
+			return
 		}
 		questionID := int(questionIDNum)
 
@@ -100,13 +100,13 @@ func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
 
 		err = json.NewDecoder(r.Body).Decode(&questionCreationDTO)
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
+			h.encodeErrorWithStatus404(err, w)
 			return
 		}
 
 		err = helpers.ValidateStruct(questionCreationDTO)
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
+			h.encodeErrorWithStatus404(err, w)
 			return
 		}
 
@@ -125,7 +125,8 @@ func (h *QuestionHandler) DeleteQuestion() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		questionIDNum, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
 		if err != nil {
-			h.encodeErrorWithStatus500(err, w)
+			h.encodeErrorWithStatus404(err, w)
+			return
 		}
 		questionID := int(questionIDNum)
 
@@ -142,5 +143,11 @@ func (h *QuestionHandler) DeleteQuestion() http.HandlerFunc {
 func (h *QuestionHandler) encodeErrorWithStatus500(err error, w http.ResponseWriter) {
 	errorResponse := fmt.Sprintf("error: %s", err.Error())
 	w.WriteHeader(http.StatusInternalServerError)
-	json.NewEncoder(w).Encode(errorResponse)
+	w.Write([]byte(errorResponse))
+}
+
+func (h *QuestionHandler) encodeErrorWithStatus404(err error, w http.ResponseWriter) {
+	errorResponse := fmt.Sprintf("error: %s", err.Error())
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write([]byte(errorResponse))
 }
