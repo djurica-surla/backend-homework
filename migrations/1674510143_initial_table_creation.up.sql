@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS question (
 CREATE TABLE IF NOT EXISTS question_option (
     id INTEGER PRIMARY KEY ,
     body VARCHAR(255),
-    correct INTEGER NOT NULL CHECK (correct IN (0, 1)),
+    correct BOOLEAN,
     question_id INTEGER NOT NULL,
     CONSTRAINT fk_question
     FOREIGN KEY (question_id) 

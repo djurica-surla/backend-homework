@@ -58,16 +58,10 @@ func (s *QuestionService) GetQuestions(ctx context.Context, pageSize, offset int
 		questionOptions := []QuestionOptionDTO{}
 
 		for _, questionOption := range questionOptionsEntity {
-			isCorrect := false
-
-			if questionOption.Correct == 1 {
-				isCorrect = true
-			}
-
 			questionOptions = append(questionOptions, QuestionOptionDTO{
 				questionOption.ID,
 				questionOption.Body,
-				isCorrect,
+				questionOption.Correct,
 			})
 		}
 
@@ -96,16 +90,10 @@ func (s *QuestionService) GetQuestionByID(ctx context.Context, questionID int) (
 	questionOptions := []QuestionOptionDTO{}
 
 	for _, questionOption := range questionOptionsEntity {
-		isCorrect := false
-
-		if questionOption.Correct == 1 {
-			isCorrect = true
-		}
-
 		questionOptions = append(questionOptions, QuestionOptionDTO{
 			questionOption.ID,
 			questionOption.Body,
-			isCorrect,
+			questionOption.Correct,
 		})
 	}
 

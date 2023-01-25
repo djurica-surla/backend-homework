@@ -4,12 +4,12 @@ VALUES ('Which is the fastest land animal?'),
        ('What is the tallest building in the world?');  
 
 INSERT INTO question_option (body, correct, question_id)
-VALUES ('Monkey', 0, 1),
-       ('Cow', 0, 1),
-       ('Cheetah', 1, 1),
-       ('4', 0, 2),
-       ('11', 0, 2),
-       ('7', 1, 2),
-       ('Burj Khalifa', 1, 3),
-       ('Shanghai Tower', 0, 3),
-       ('One World Trade Center', 0, 3);
+VALUES ('Monkey', FALSE, 1),
+       ('Cow', FALSE, 1),
+       ('Cheetah', TRUE, 1),
+       ('4', FALSE, 2),
+       ('11', FALSE, 2),
+       ('7', TRUE, 2),
+       ('Burj Khalifa', TRUE, 3),
+       ('Shanghai Tower', FALSE, 3),
+       ('One World Trade Center', FALSE, 3);

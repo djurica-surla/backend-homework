@@ -2,14 +2,14 @@ package entity
 
 // Represents question.
 type Question struct {
-	ID   int    `json:"id"`
-	Body string `json:"body"`
+	ID   int
+	Body string
 }
 
 // Represents options for question.
 type QuestionOption struct {
-	ID         int    `json:"id"`
-	Body       string `json:"body"`
-	Correct    int    `json:"correct"`
-	QuestionID int    `json:"question_id"`
+	ID         int
+	Body       string
+	Correct    bool
+	QuestionID int
 }
