@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/djurica-surla/backend-homework/internal/entity"
+	"github.com/djurica-surla/backend-homework/internal/service"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "modernc.org/sqlite"
@@ -54,10 +55,10 @@ func (store *QuestionOptionStore) GetQuestionOptions(ctx context.Context, questi
 
 // Creates a new QuestionOption in the database.
 func (store *QuestionOptionStore) CreateQuestionOption(ctx context.Context,
-	questionID, correct int, body string) error {
+	questionID int, option service.QuestionOptionCreationDTO) error {
 	_, err := store.db.ExecContext(ctx,
 		`INSERT INTO question_option (body, correct, question_id)
-		VALUES ($1, $2, $3)`, body, correct, questionID)
+		VALUES ($1, $2, $3)`, option.Body, option.Correct, questionID)
 	if err != nil {
 		return fmt.Errorf("error creating question options in database %w", err)
 	}

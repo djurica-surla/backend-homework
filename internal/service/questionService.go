@@ -19,7 +19,7 @@ type QuestionStorer interface {
 // QuestionOptionStorer represents necessary question option storage implementation for question service.
 type QuestionOptionStorer interface {
 	GetQuestionOptions(ctx context.Context, questionID int) ([]entity.QuestionOption, error)
-	CreateQuestionOption(ctx context.Context, questionID, correct int, body string) error
+	CreateQuestionOption(ctx context.Context, questionID int, questionOption QuestionOptionCreationDTO) error
 	// UpdateQuestionOption(ctx context.Context, body string, correct int, questionID int) error
 	DeleteQuestionOptions(ctx context.Context, questionID int) error
 }
@@ -112,15 +112,7 @@ func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation Q
 	}
 
 	for _, option := range questionCreation.Options {
-		// Zero for false, one for true
-		correctInt := 0
-
-		if option.Correct {
-			correctInt = 1
-		}
-
-		err := s.questionOptionStore.CreateQuestionOption(
-			ctx, questionID, correctInt, option.Body)
+		err := s.questionOptionStore.CreateQuestionOption(ctx, questionID, option)
 		if err != nil {
 			return QuestionDTO{}, err
 		}
@@ -156,16 +148,8 @@ func (s *QuestionService) UpdateQuestion(ctx context.Context,
 	}
 
 	for _, option := range questionCreation.Options {
-		// Zero for false, one for true
-		correctInt := 0
-
-		if option.Correct {
-			correctInt = 1
-		}
-
 		// Insert new options into the database.
-		err = s.questionOptionStore.CreateQuestionOption(
-			ctx, questionID, correctInt, option.Body)
+		err = s.questionOptionStore.CreateQuestionOption(ctx, questionID, option)
 		if err != nil {
 			return QuestionDTO{}, fmt.Errorf("error trying to update question: %w", err)
 		}
