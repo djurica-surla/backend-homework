@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/djurica-surla/backend-homework/internal/config"
 	"github.com/djurica-surla/backend-homework/internal/database"
 	"github.com/djurica-surla/backend-homework/internal/service"
 	"github.com/djurica-surla/backend-homework/internal/storage"
@@ -14,10 +15,13 @@ import (
 )
 
 func main() {
+	// Loads the app config from config.json
+	config.LoadAppConfig()
+
 	// Attempt to establish a connection with the database.
 	connection, err := database.Connect(
 		context.Background(),
-		database.Config{DSN: "homework.sqlite"},
+		database.Config{DSN: config.AppConfig.DSN},
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -48,6 +52,6 @@ func main() {
 	handler.RegisterRoutes(router)
 
 	// Start the server
-	log.Printf("Starting Server on port %s", "8080")
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", "8080"), router))
+	log.Printf("starting server on port %s", config.AppConfig.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.AppConfig.Port), router))
 }

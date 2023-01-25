@@ -49,7 +49,7 @@ func Connect(
 		return nil, ErrFailedConnection
 	}
 
-	log.Println("Connection successful!")
+	log.Println("database connection successful")
 	return instance, nil
 }
 
