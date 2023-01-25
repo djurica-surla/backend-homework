@@ -58,21 +58,8 @@ func (store *QuestionOptionStore) CreateQuestionOption(ctx context.Context,
 	_, err := store.db.ExecContext(ctx,
 		`INSERT INTO question_option (body, correct, question_id)
 		VALUES ($1, $2, $3)`, body, correct, questionID)
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("error creating question options in database %w", err)
-	}
-
-	return nil
-}
-
-// Updates an QuestionOption in the database by the question id.
-func (store *QuestionOptionStore) UpdateQuestionOption(ctx context.Context,
-	body string, correct int, questionID int) error {
-	_, err := store.db.ExecContext(ctx,
-		`INSERT INTO question_option (body, correct, question_id)
-		VALUES ($1, $2, $3)`, body, correct, questionID)
 	if err != nil {
-		return fmt.Errorf("failed to update question option %w", err)
+		return fmt.Errorf("error creating question options in database %w", err)
 	}
 
 	return nil
@@ -89,3 +76,16 @@ func (store *QuestionOptionStore) DeleteQuestionOptions(ctx context.Context, que
 
 	return nil
 }
+
+// // Updates an QuestionOption in the database by the question id.
+// func (store *QuestionOptionStore) UpdateQuestionOption(ctx context.Context,
+// 	body string, correct int, questionID int) error {
+// 	_, err := store.db.ExecContext(ctx,
+// 		`INSERT INTO question_option (body, correct, question_id)
+// 		VALUES ($1, $2, $3)`, body, correct, questionID)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to update question option %w", err)
+// 	}
+
+// 	return nil
+// }

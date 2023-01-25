@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/djurica-surla/backend-homework/internal/entity"
@@ -20,7 +22,7 @@ type QuestionStorer interface {
 type QuestionOptionStorer interface {
 	GetQuestionOptions(ctx context.Context, questionID int) ([]entity.QuestionOption, error)
 	CreateQuestionOption(ctx context.Context, questionID, correct int, body string) error
-	UpdateQuestionOption(ctx context.Context, body string, correct int, questionID int) error
+	// UpdateQuestionOption(ctx context.Context, body string, correct int, questionID int) error
 	DeleteQuestionOptions(ctx context.Context, questionID int) error
 }
 
@@ -117,10 +119,10 @@ func (s *QuestionService) GetQuestionByID(ctx context.Context, questionID int) (
 }
 
 // CreateQuestion handles the logic for creating question and its options in database.
-func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation QuestionCreationDTO) error {
+func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation QuestionCreationDTO) (QuestionDTO, error) {
 	questionID, err := s.questionStore.CreateQuestion(ctx, questionCreation.Body)
 	if err != nil {
-		return err
+		return QuestionDTO{}, err
 	}
 
 	// Zero for false, one for true
@@ -134,19 +136,34 @@ func (s *QuestionService) CreateQuestion(ctx context.Context, questionCreation Q
 		err := s.questionOptionStore.CreateQuestionOption(
 			ctx, questionID, correctInt, option.Body)
 		if err != nil {
-			return err
+			return QuestionDTO{}, err
 		}
 	}
 
-	return nil
+	// Retrieve the new records.
+	questionDTO, err := s.GetQuestionByID(ctx, questionID)
+	if err != nil {
+		return QuestionDTO{}, fmt.Errorf("error trying to update question: %w", err)
+	}
+
+	return questionDTO, nil
 }
 
 // UpdateQuestion handles the logic for updating question and its options in database.
 func (s *QuestionService) UpdateQuestion(ctx context.Context,
 	questionID int, questionCreation QuestionCreationDTO) (QuestionDTO, error) {
 
+	// Validate that the question exists
+	_, err := s.GetQuestionByID(ctx, questionID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return QuestionDTO{}, nil
+		}
+		return QuestionDTO{}, fmt.Errorf("error trying to update question: %w", err)
+	}
+
 	// Update the question record first
-	err := s.questionStore.UpdateQuestion(ctx, questionID, questionCreation.Body)
+	err = s.questionStore.UpdateQuestion(ctx, questionID, questionCreation.Body)
 	if err != nil {
 		return QuestionDTO{}, err
 	}

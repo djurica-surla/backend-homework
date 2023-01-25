@@ -57,7 +57,7 @@ func (store *QuestionStore) GetQuestionByID(ctx context.Context, questionID int)
 		`SELECT * FROM question WHERE id = $1`, questionID).
 		Scan(&question.ID, &question.Body)
 	if err != nil {
-		return entity.Question{}, fmt.Errorf("error getting questions from db %w", err)
+		return entity.Question{}, fmt.Errorf("error getting question from db %w", err)
 	}
 
 	return question, nil

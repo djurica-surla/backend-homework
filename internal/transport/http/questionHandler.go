@@ -22,8 +22,8 @@ func (h *QuestionHandler) RegisterRoutes(router *mux.Router) {
 // QuestionServicer represents necessary question service implementation for question handler.
 type QuestionServicer interface {
 	GetQuestions(ctx context.Context) ([]service.QuestionDTO, error)
-	CreateQuestion(ctx context.Context, dto service.QuestionCreationDTO) error
-	UpdateQuestion(ctx context.Context, questionID int, dto service.QuestionCreationDTO) (service.QuestionDTO, error)
+	CreateQuestion(ctx context.Context, questionCreation service.QuestionCreationDTO) (service.QuestionDTO, error)
+	UpdateQuestion(ctx context.Context, questionID int, questionCreation service.QuestionCreationDTO) (service.QuestionDTO, error)
 }
 
 // QuestionHandler handles http requests for questions.
@@ -41,13 +41,13 @@ func NewQuestionHandler(questionService QuestionServicer) *QuestionHandler {
 // GetQuestions handles retrieveing questions.
 func (h *QuestionHandler) GetQuestions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		questions, err := h.questionService.GetQuestions(r.Context())
+		res, err := h.questionService.GetQuestions(r.Context())
 		if err != nil {
 			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
-		json.NewEncoder(w).Encode(questions)
+		json.NewEncoder(w).Encode(res)
 	}
 }
 
@@ -68,13 +68,13 @@ func (h *QuestionHandler) CreateQuestion() http.HandlerFunc {
 			return
 		}
 
-		err = h.questionService.CreateQuestion(r.Context(), questionCreationDTO)
+		res, err := h.questionService.CreateQuestion(r.Context(), questionCreationDTO)
 		if err != nil {
 			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
-		json.NewEncoder(w).Encode("successfully created question!")
+		json.NewEncoder(w).Encode(res)
 	}
 }
 
@@ -101,13 +101,13 @@ func (h *QuestionHandler) UpdateQuestion() http.HandlerFunc {
 			return
 		}
 
-		dto, err := h.questionService.UpdateQuestion(r.Context(), questionID, questionCreationDTO)
+		res, err := h.questionService.UpdateQuestion(r.Context(), questionID, questionCreationDTO)
 		if err != nil {
 			h.encodeErrorWithStatus500(err, w)
 			return
 		}
 
-		json.NewEncoder(w).Encode(dto)
+		json.NewEncoder(w).Encode(res)
 	}
 }
 
