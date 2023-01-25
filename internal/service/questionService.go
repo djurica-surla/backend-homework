@@ -42,7 +42,7 @@ func NewQuestionService(questionStore QuestionStorer, QuestionOptionStore Questi
 func (s *QuestionService) GetQuestions(ctx context.Context, pageSize, offset int) ([]QuestionDTO, error) {
 	questionsEntity, err := s.questionStore.GetQuestions(ctx, pageSize, offset)
 	if err != nil {
-		return []QuestionDTO{}, err
+		return nil, err
 	}
 
 	questions := []QuestionDTO{}

@@ -9,3 +9,9 @@ lint:
 
 lint-fix:
 	golangci-lint run --fix
+
+get-generator:
+	go install github.com/golang/mock/mockgen
+
+generate: get-generator
+	go generate ./...

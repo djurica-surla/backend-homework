@@ -29,7 +29,7 @@ func (store *QuestionStore) GetQuestions(ctx context.Context, pageSize, offset i
 		`SELECT * FROM question 
 		  LIMIT $2 OFFSET $1`, offset, pageSize)
 	if err != nil && err != sql.ErrNoRows {
-		return []entity.Question{}, fmt.Errorf("error getting questions from db %w", err)
+		return nil, fmt.Errorf("error getting questions from db %w", err)
 	}
 	defer rows.Close()
 
